@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'ivy-publish'
+
+group = 'test'
+version = 1.0
+
+publishing {
+    repositories {
+        ivy {
+            name 'distIvy'
+            url './build/ivyDist'
+        }
+    }
+    publications {
+        testIvy(IvyPublication) {
+            from components.java
+            descriptor {
+                extraInfo('customNamespace', 'myElement', 'value') 
+                withXml { XmlProvider xml ->
+                    def root = xml.asNode()
+                    def infoNode = root?.info[0]
+                    infoNode.appendNode('description', [:], project.description ?: '')
+                }
+            }
+        }
+    }
+}
